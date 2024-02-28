@@ -43,8 +43,6 @@ export default function CheckoutPage() {
 									<p>{product.title}</p>
 									<p>${product.price} x 3</p>
 									<p className="font-bold">Subtotal: ${product.price * 3}</p>
-
-									<button className="underline mt-3">Remover</button>
 								</div>
 							</div>
 						))}
@@ -52,7 +50,7 @@ export default function CheckoutPage() {
 
 					{/* Checkout - Resumen de orden */}
 					<div className="bg-white rounded-xl shadow-xl p-7">
-						<h2 className="text-2xl font-bold mb-2">Dirección de entrega</h2>
+						<h2 className="text-2xl mb-2">Dirección de entrega</h2>
 
 						<div className="mb-10">
 							<p className="text-xl">Fernando Herrera</p>
