@@ -28,9 +28,21 @@ async function main() {
 		return map;
 	}, {} as Record<string, string>); //<string=shirt, string=categoryID>
 
-	console.log(categoriesMap);
-
 	// Productos
+	products.forEach(async (product) => {
+		const { type, images, ...rest } = product;
+
+		const dbProduct = await prisma.product.create({
+			data: {
+				...rest,
+				categoryId: categoriesMap[type]
+			}
+		});
+
+		// Images
+	});
+
+	console.log('Seed ejecutado correctamente');
 }
 
 (() => {
