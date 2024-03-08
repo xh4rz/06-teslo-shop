@@ -7,6 +7,7 @@ import {
 	QuantitySelector,
 	SizeSelector
 } from '@/components';
+import StockLabel from '@/components/product/stock-label/StockLabel';
 import { titleFont } from '@/config/fonts';
 
 import { notFound } from 'next/navigation';
@@ -21,8 +22,6 @@ export default async function ProductBySlugPage({ params }: Props) {
 	const { slug } = params;
 
 	const product = await getProductBySlug(slug);
-
-	console.log(product);
 
 	if (!product) {
 		notFound();
@@ -48,6 +47,8 @@ export default async function ProductBySlugPage({ params }: Props) {
 
 			{/* Detales */}
 			<div className="col-span-1 px-5">
+				<StockLabel slug={product.slug} />
+
 				<h1 className={`${titleFont.className} antialiased font-bold text-xl`}>
 					{product.title}
 				</h1>
