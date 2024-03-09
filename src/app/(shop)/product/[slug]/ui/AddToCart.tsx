@@ -13,12 +13,22 @@ export const AddToCart = ({ product }: Props) => {
 
 	const [quantity, setQuantity] = useState<number>(1);
 
+	const [posted, setPosted] = useState(false);
+
 	const addToCart = () => {
-		console.log({ size, quantity });
+		setPosted(true);
+
+		if (!size) return;
 	};
 
 	return (
 		<>
+			{posted && !size && (
+				<span className="mt-2 text-red-500 fade-in">
+					Debe de seleccionar una talla*
+				</span>
+			)}
+
 			{/* Selector de Tallas */}
 			<SizeSelector
 				selectedSize={size}
