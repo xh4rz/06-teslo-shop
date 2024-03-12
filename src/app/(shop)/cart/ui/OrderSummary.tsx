@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCartStore } from '@/store';
 import { currencyFormat } from '@/utils';
+import { redirect } from 'next/navigation';
 
 export const OrderSummary = () => {
 	const [loaded, setLoaded] = useState(false);
@@ -16,6 +17,10 @@ export const OrderSummary = () => {
 	}, []);
 
 	if (!loaded) return <p>Cargando...</p>;
+
+	if (itemsInCart === 0) {
+		redirect('/empty');
+	}
 
 	return (
 		<div className="grid grid-cols-2">

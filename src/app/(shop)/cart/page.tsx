@@ -37,7 +37,6 @@ export default function CartPage() {
 							>
 								Checkout
 							</Link>
-							O
 						</div>
 					</div>
 				</div>
