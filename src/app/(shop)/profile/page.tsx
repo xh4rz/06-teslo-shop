@@ -12,7 +12,7 @@ export default async function ProfilePage() {
 
 	return (
 		<div>
-			<Title title="Pefil" />
+			<Title title="Perfil" />
 
 			<pre>{JSON.stringify(session.user, null, 2)}</pre>
 		</div>
