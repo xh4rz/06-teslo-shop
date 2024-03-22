@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import NextAuth, { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
@@ -32,8 +33,6 @@ export const authConfig: NextAuthConfig = {
 
 				// Regresar el usuario sin la contraseña
 				const { password: _, ...rest } = user;
-
-				console.log({ rest });
 
 				return rest;
 			}
