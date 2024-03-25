@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { registerUser } from '@/actions';
+import { login, registerUser } from '@/actions';
 
 type FormInputs = {
 	name: string;
@@ -13,13 +13,13 @@ type FormInputs = {
 };
 
 export const RegisterForm = () => {
+	const [errorMessage, setErrorMessage] = useState('');
+
 	const {
 		register,
 		handleSubmit,
 		formState: { errors }
 	} = useForm<FormInputs>();
-
-	const [errorMessage, setErrorMessage] = useState('');
 
 	const onSubmit: SubmitHandler<FormInputs> = async (data) => {
 		setErrorMessage('');
@@ -33,9 +33,9 @@ export const RegisterForm = () => {
 			return;
 		}
 
-		console.log({ resp });
+		await login(email.toLowerCase(), password);
 
-		// server action
+		window.location.replace('/');
 	};
 
 	return (
