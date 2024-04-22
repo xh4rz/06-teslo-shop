@@ -5,7 +5,7 @@ import { useAddressStore } from '@/store';
 import { useForm } from 'react-hook-form';
 import type { Country } from '@/interfaces';
 import clsx from 'clsx';
-import { setUserAddress } from '@/actions';
+import { deleteUserAddress, setUserAddress } from '@/actions';
 import { useSession } from 'next-auth/react';
 
 type FormInputs = {
@@ -54,11 +54,9 @@ export const AddressForm = ({ countries }: Props) => {
 		const { rememberAddress, ...restAddress } = data;
 
 		if (data.rememberAddress) {
-			// Todo: Serve Action
 			setUserAddress(restAddress, session!.user.id);
 		} else {
-			// Todo: Serve Action
-			// Tarea
+			deleteUserAddress(session!.user.id);
 		}
 	};
 
