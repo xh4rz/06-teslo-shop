@@ -1,12 +1,14 @@
+/* eslint-disable no-unused-vars */
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useAddressStore } from '@/store';
 import { useForm } from 'react-hook-form';
 import type { Address, Country } from '@/interfaces';
 import clsx from 'clsx';
 import { deleteUserAddress, setUserAddress } from '@/actions';
-import { useSession } from 'next-auth/react';
 
 type FormInputs = {
 	firstName: string;
@@ -26,6 +28,8 @@ interface Props {
 }
 
 export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
+	const router = useRouter();
+
 	const {
 		handleSubmit,
 		register,
@@ -50,16 +54,18 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
 		}
 	}, [address.firstName]);
 
-	const onSubmit = (data: FormInputs) => {
+	const onSubmit = async (data: FormInputs) => {
 		setAddress(data);
 
 		const { rememberAddress, ...restAddress } = data;
 
 		if (data.rememberAddress) {
-			setUserAddress(restAddress, session!.user.id);
+			await setUserAddress(restAddress, session!.user.id);
 		} else {
-			deleteUserAddress(session!.user.id);
+			await deleteUserAddress(session!.user.id);
 		}
+
+		router.push('/checkout');
 	};
 
 	return (
