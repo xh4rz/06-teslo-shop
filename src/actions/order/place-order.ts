@@ -63,4 +63,13 @@ export const placeOrder = async (
 	);
 
 	// crear la transacción de base de datos
+	const prismaTx = await prisma.$transaction(async (tx) => {
+		// 1. Actualizar el stock de los productos
+
+		// 2. Crear la orden - Encabezado - Detalles
+
+		// 3. Crear la direccion de la orden
+
+		return {};
+	});
 };
