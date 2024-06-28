@@ -67,9 +67,35 @@ export const placeOrder = async (
 		// 1. Actualizar el stock de los productos
 
 		// 2. Crear la orden - Encabezado - Detalles
+		const order = await tx.order.create({
+			data: {
+				userId: userId,
+				itemsInOrder: itemsInOrder,
+				subTotal: subTotal,
+				tax: tax,
+				total: total,
+
+				OrderItem: {
+					createMany: {
+						data: productIds.map((p) => ({
+							quantity: p.quantity,
+							size: p.size,
+							productId: p.productId,
+							price:
+								products.find((product) => product.id === p.productId)?.price ??
+								0
+						}))
+					}
+				}
+			}
+		});
 
 		// 3. Crear la direccion de la orden
 
-		return {};
+		return {
+			order: order,
+			updatedProducts: [],
+			orderAddress: {}
+		};
 	});
 };
