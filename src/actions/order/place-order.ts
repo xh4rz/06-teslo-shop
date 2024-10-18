@@ -63,48 +63,92 @@ export const placeOrder = async (
 	);
 
 	// crear la transacción de base de datos
-	const prismaTx = await prisma.$transaction(async (tx) => {
-		// 1. Actualizar el stock de los productos
+	try {
+		const prismaTx = await prisma.$transaction(async (tx) => {
+			// 1. Actualizar el stock de los productos
+			const updatedProductsPromises = products.map((product) => {
+				// acumular los valores
+				const productQuantity = productIds
+					.filter((p) => p.productId === product.id)
+					.reduce((acc, item) => item.quantity + acc, 0);
 
-		// 2. Crear la orden - Encabezado - Detalles
-		const order = await tx.order.create({
-			data: {
-				userId: userId,
-				itemsInOrder: itemsInOrder,
-				subTotal: subTotal,
-				tax: tax,
-				total: total,
+				if (productQuantity === 0) {
+					throw new Error(`${product.id} no tiene cantidad definida`);
+				}
 
-				OrderItem: {
-					createMany: {
-						data: productIds.map((p) => ({
-							quantity: p.quantity,
-							size: p.size,
-							productId: p.productId,
-							price:
-								products.find((product) => product.id === p.productId)?.price ??
-								0
-						}))
+				return tx.product.update({
+					where: {
+						id: product.id
+					},
+					data: {
+						// inStock: product.inStock - productQuantity // no hacer
+						inStock: {
+							decrement: productQuantity
+						}
+					}
+				});
+			});
+
+			const updatedProducts = await Promise.all(updatedProductsPromises);
+
+			// verificar valores negativos en las existencias = no hay stock
+			updatedProducts.forEach((product) => {
+				if (product.inStock < 0) {
+					throw new Error(`${product.title} no tiene inventario suficiente`);
+				}
+			});
+
+			// 2. Crear la orden - Encabezado - Detalles
+			const order = await tx.order.create({
+				data: {
+					userId: userId,
+					itemsInOrder: itemsInOrder,
+					subTotal: subTotal,
+					tax: tax,
+					total: total,
+
+					OrderItem: {
+						createMany: {
+							data: productIds.map((p) => ({
+								quantity: p.quantity,
+								size: p.size,
+								productId: p.productId,
+								price:
+									products.find((product) => product.id === p.productId)
+										?.price ?? 0
+							}))
+						}
 					}
 				}
-			}
-		});
+			});
 
-		// 3. Crear la direccion de la orden
-		const { country, ...restAddress } = address;
+			// 3. Crear la direccion de la orden
+			const { country, ...restAddress } = address;
 
-		const orderAddress = await tx.orderAddress.create({
-			data: {
-				...restAddress,
-				countryId: country,
-				orderId: order.id
-			}
+			const orderAddress = await tx.orderAddress.create({
+				data: {
+					...restAddress,
+					countryId: country,
+					orderId: order.id
+				}
+			});
+
+			return {
+				order: order,
+				orderAddress: orderAddress,
+				updatedProducts: updatedProducts
+			};
 		});
 
 		return {
-			order: order,
-			orderAddress: orderAddress,
-			updatedProducts: []
+			ok: true,
+			order: prismaTx.order,
+			prismaTx: prismaTx
 		};
-	});
+	} catch (error: any) {
+		return {
+			ok: false,
+			message: error?.message
+		};
+	}
 };
